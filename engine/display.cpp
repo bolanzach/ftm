@@ -2,27 +2,29 @@
 #include "display.h"
 
 SDL_Window* window = nullptr;
-SDL_Renderer* renderer = nullptr;
-SDL_Texture* colorBufferTexture;
+//SDL_Renderer* renderer = nullptr;
+//SDL_Texture* colorBufferTexture;
 
 // Notice that this is a pointer. It acts as an array of memory where the pointer is
 // the first element in the allocated array.
-color_t* colorBuffer = nullptr;
+//color_t* colorBuffer = nullptr;
 
 int windowWidth = 800;
 int windowHeight = 500;
 
 bool initializeWindow() {
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        fprintf(stderr, "error initializing SDL!\n");
+    if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         return false;
     }
 
-    SDL_DisplayMode displayMode;
-    SDL_GetCurrentDisplayMode(0, &displayMode);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
-    windowWidth = displayMode.w;
-    windowHeight = displayMode.h;
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
     window = SDL_CreateWindow(
             "Zengine",
@@ -30,60 +32,56 @@ bool initializeWindow() {
             SDL_WINDOWPOS_CENTERED,
             windowWidth,
             windowHeight,
-            SDL_WINDOW_SHOWN
+            SDL_WINDOW_OPENGL
     );
-    if (!window) {
-        fprintf(stderr, "Error creating SDL Window!\n");
-        return false;
-    }
 
-    renderer = SDL_CreateRenderer(window, -1, 0);
-    if (!renderer) {
-        fprintf(stderr, "Error creating SDL Renderer!\n");
-        return false;
-    }
+    SDL_GLContext context = SDL_GL_CreateContext(window);
 
-    /// This is where we allocate memory to hold all the pixels
-    colorBuffer = (color_t*) malloc(sizeof(color_t) * windowWidth * windowHeight);
-    assert(colorBuffer);
+    glewExperimental = GL_TRUE;
+    GLenum initGLEW(glewInit());
 
-    // Texture used to display the color_buffer
-    colorBufferTexture = SDL_CreateTexture(
-            renderer,
-            SDL_PIXELFORMAT_ARGB8888,
-            SDL_TEXTUREACCESS_STREAMING,
-            windowWidth,
-            windowHeight
-    );
+    // Get graphics info
+    const GLubyte* renderer = glGetString(GL_RENDERER);
+    const GLubyte* version = glGetString(GL_VERSION);
+
+    glViewport(0, 0, windowWidth, windowHeight);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
     return true;
 }
 
+void displayUpdate() {
+    SDL_GL_SwapWindow(window);
+}
+
 void destroyWindow() {
-    free(colorBuffer);
-    SDL_DestroyRenderer(renderer);
+//    free(colorBuffer);
+//    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
 
 void renderColorBuffer() {
-    SDL_UpdateTexture(
-            colorBufferTexture,
-            nullptr,
-            colorBuffer,
-            (int) (windowWidth * sizeof(color_t))
-    );
-    
-    SDL_RenderCopy(renderer, colorBufferTexture, nullptr, nullptr);
-    SDL_RenderPresent(renderer);
+//    SDL_UpdateTexture(
+//            colorBufferTexture,
+//            nullptr,
+//            colorBuffer,
+//            (int) (windowWidth * sizeof(color_t))
+//    );
+//
+//    SDL_RenderCopy(renderer, colorBufferTexture, nullptr, nullptr);
+//    SDL_RenderPresent(renderer);
 }
 
 void clearColorBuffer(color_t color) {
-    for (int y = 0; y < windowHeight; y++) {
-        for (int x = 0; x < windowWidth; x++) {
-            drawPixel(x, y, color);
-        }
-    }
+//    for (int y = 0; y < windowHeight; y++) {
+//        for (int x = 0; x < windowWidth; x++) {
+//            drawPixel(x, y, color);
+//        }
+//    }
 }
 
 SDL_Event processInput() {
@@ -93,7 +91,7 @@ SDL_Event processInput() {
 }
 
 void drawPixel(int x, int y, color_t color) {
-    if (x >= 0 && x < windowWidth && y >= 0 && y < windowHeight) {
-        colorBuffer[(windowWidth * y) + x] = color;
-    }
+//    if (x >= 0 && x < windowWidth && y >= 0 && y < windowHeight) {
+//        colorBuffer[(windowWidth * y) + x] = color;
+//    }
 }

@@ -8,8 +8,11 @@ void setup() {
 }
 
 void render() {
-    renderColorBuffer();
-    clearColorBuffer(0xFF000000);
+    displayUpdate();
+//    renderColorBuffer();
+//    clearColorBuffer(0xFF000000);
+//    renderColorBuffer();
+//    clearColorBuffer(0xFF000000);
 }
 
 void handleInput() {
@@ -28,10 +31,10 @@ void handleInput() {
 }
 
 void update() {
-    drawPixel(100, 100, 0xFFFFFFFF);
-    drawPixel(101, 100, 0xFFFFFFFF);
-    drawPixel(101, 101, 0xFFFFFFFF);
-    drawPixel(100, 101, 0xFFFFFFFF);
+//    drawPixel(100, 100, 0xFFFFFFFF);
+//    drawPixel(101, 100, 0xFFFFFFFF);
+//    drawPixel(101, 101, 0xFFFFFFFF);
+//    drawPixel(100, 101, 0xFFFFFFFF);
 }
 
 int main() {
@@ -42,5 +45,7 @@ int main() {
         update();
         render();
     }
+
+    destroyWindow();
     return 0;
 }
