@@ -1,4 +1,5 @@
 #include <cassert>
+#include <iostream>
 #include "display.h"
 
 SDL_Window* window = nullptr;
@@ -9,10 +10,31 @@ SDL_Window* window = nullptr;
 // the first element in the allocated array.
 //color_t* colorBuffer = nullptr;
 
+const char *vertexShaderSource = "#version 330 core\n"
+                                 "layout (location = 0) in vec3 aPos;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+                                 "}\0";
+
+const char *fragmentShaderSource = "#version 330 core\n"
+                                   "out vec4 FragColor;\n"
+                                   "void main()\n"
+                                   "{\n"
+                                   "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+                                   "}\n\0";
+
 int windowWidth = 800;
 int windowHeight = 500;
 
+unsigned int VAO;
+unsigned int VBO;
+unsigned int shaderProgram;
+
 bool initializeWindow() {
+    // A good resource:
+    // https://github.com/Gaetz/SDL-OpenGL
+
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         return false;
     }
@@ -35,31 +57,110 @@ bool initializeWindow() {
             SDL_WINDOW_OPENGL
     );
 
-    SDL_GLContext context = SDL_GL_CreateContext(window);
+    SDL_GL_CreateContext(window);
 
     glewExperimental = GL_TRUE;
     GLenum initGLEW(glewInit());
+    if (initGLEW != GLEW_OK) {
+        return false;
+    }
 
     // Get graphics info
-    const GLubyte* renderer = glGetString(GL_RENDERER);
-    const GLubyte* version = glGetString(GL_VERSION);
+//    const GLubyte* renderer = glGetString(GL_RENDERER);
+//    const GLubyte* version = glGetString(GL_VERSION);
 
     glViewport(0, 0, windowWidth, windowHeight);
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    ///// SHADERS /////
+    int shaderCompileSuccess;
+    char infoLog[512];
+
+    unsigned int vertexShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
+    glCompileShader(vertexShader);
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &shaderCompileSuccess);
+    if (!shaderCompileSuccess) {
+        glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    unsigned int fragmentShader;
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
+    glCompileShader(fragmentShader);
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &shaderCompileSuccess);
+    if (!shaderCompileSuccess) {
+        glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    shaderProgram = glCreateProgram();
+
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    ///// VERTICES /////
+    float vertices[] = {
+            -0.5f, -0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            0.0f,  0.5f, 0.0f
+    };
+
+    ///// BUFFERS /////
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+
+
+
+    // Check for linking errors
+//    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+//    if(!success) {
+//        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+//        ...
+//    }
+
+
+
+
+
+
+
+
 
     return true;
 }
 
 void displayUpdate() {
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glUseProgram(shaderProgram);
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
     SDL_GL_SwapWindow(window);
 }
 
 void destroyWindow() {
-//    free(colorBuffer);
-//    SDL_DestroyRenderer(renderer);
+    glDeleteVertexArrays(1, &VAO);
+    // glDeleteBuffers(1, &VBO);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }

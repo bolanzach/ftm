@@ -21,12 +21,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="799eee1b-ae9c-46b1-8be3-793d48de47a1" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/engine/display.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/engine/display.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/engine/display.h" beforeDir="false" afterPath="$PROJECT_DIR$/engine/display.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/engine/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/engine/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +112,7 @@
       <updated>1707100145981</updated>
       <workItem from="1707100147060" duration="2713000" />
       <workItem from="1707102870895" duration="812000" />
-      <workItem from="1708143688440" duration="4560000" />
+      <workItem from="1708143688440" duration="8359000" />
     </task>
     <servers />
   </component>
