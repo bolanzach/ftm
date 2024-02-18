@@ -18,6 +18,14 @@ add_executable(ftm
         engine/main.cpp
         engine/display.cpp
         engine/display.h
+        engine/triangle.h.cpp
+        engine/triangle.h.h
+        engine/vector.cpp
+        engine/vector.h
+        engine/mesh.cpp
+        engine/mesh.h
+        engine/face.cpp
+        engine/face.h
 )
 
 target_link_libraries(ftm ${SDL2_LIBRARIES} GLEW::GLEW)

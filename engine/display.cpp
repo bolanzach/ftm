@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iostream>
 #include "display.h"
+#include "mesh.h"
 
 SDL_Window* window = nullptr;
 //SDL_Renderer* renderer = nullptr;
@@ -49,7 +50,7 @@ bool initializeWindow() {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
     window = SDL_CreateWindow(
-            "Zengine",
+            "FtM",
             SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED,
             windowWidth,
@@ -75,6 +76,7 @@ bool initializeWindow() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     ///// SHADERS /////
+    ////////////////////
     int shaderCompileSuccess;
     char infoLog[512];
 
@@ -107,34 +109,49 @@ bool initializeWindow() {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    ///// VERTICES /////
-    float vertices[] = {
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.0f,  0.5f, 0.0f
-    };
-
-    ///// BUFFERS /////
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-
-
-
     // Check for linking errors
 //    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 //    if(!success) {
 //        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
 //        ...
 //    }
+
+    ///// VERTICES /////
+    ////////////////////
+//    float vertices[] = {
+//            -0.5f, -0.5f, 0.0f,
+//            0.5f, -0.5f, 0.0f,
+//            0.0f,  0.5f, 0.0f
+//    };
+
+    Mesh mesh = Mesh();
+    mesh.vertices.emplace_back(-0.5f, -0.5f, 0.0f);
+    mesh.vertices.emplace_back(0.5f, -0.5f, 0.0f);
+    mesh.vertices.emplace_back(0.0f,  0.5f, 0.0f);
+
+    mesh.faces.emplace_back(0, 1, 2);
+
+    float* vertices = mesh.GetAllFaceVertices();
+
+    ///// BUFFERS /////
+    ////////////////////
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(vertices), &vertices[0], GL_STATIC_DRAW);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+
+    // Draw outline
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 
 
 
@@ -160,7 +177,7 @@ void displayUpdate() {
 
 void destroyWindow() {
     glDeleteVertexArrays(1, &VAO);
-    // glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &VBO);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
