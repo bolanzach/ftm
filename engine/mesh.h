@@ -23,7 +23,7 @@ public:
 
     Vector3* GetVerticesForFace(const Face& face);
 
-    float* GetAllFaceVertices();
+    float* GetAllFaceVertexValues();
 };
 
 #endif //FTM_MESH_H
