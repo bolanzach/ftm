@@ -48,32 +48,25 @@ Mesh Mesh::LoadFileObj(const char *fileName) {
 
     return mesh;
 }
+//
+//Vector3 *Mesh::GetVerticesForFace(const Face& face) {
+//    auto* faceVertices = new Vector3[3] {
+//            this->vertices[face.indices[0]],
+//            this->vertices[face.indices[1]],
+//            this->vertices[face.indices[2]]
+//    };
+//    return faceVertices;
+//}
 
-Vector3* Mesh::GetVerticesForFace(const Face& face) {
-    auto* faceVertices = new Vector3[3] {
-            this->vertices[face.points[0]],
-            this->vertices[face.points[1]],
-            this->vertices[face.points[2]]
-    };
-    return faceVertices;
-}
-
-float* Mesh::GetAllFaceVertexValues() {
-    auto* faceVertexValues = new float[this->faces.size() * 9];
+int* Mesh::GetAllIndices() const {
+    auto *indices = new int[this->faces.size() * 3];
 
     for (int i = 0; i < this->faces.size(); i++) {
-        Face face = this->faces[i];
-        Vector3* faceVertices = this->GetVerticesForFace(face);
-
-        for (int j = 0; j < 3; j++) {
-            faceVertexValues[i * 9 + j * 3] = faceVertices[j].x;
-            faceVertexValues[i * 9 + j * 3 + 1] = faceVertices[j].y;
-            faceVertexValues[i * 9 + j * 3 + 2] = faceVertices[j].z;
-        }
-
-        delete[] faceVertices;
+        auto face = this->faces[i];
+        indices[i * 3] = face.indices[0];
+        indices[i * 3 + 1] = face.indices[1];
+        indices[i * 3 + 2] = face.indices[2];
     }
 
-    return faceVertexValues;
-
+    return indices;
 }

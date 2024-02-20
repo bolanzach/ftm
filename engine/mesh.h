@@ -21,9 +21,9 @@ public:
     // The Mesh's rotation
     Vector3 rotation;
 
-    Vector3* GetVerticesForFace(const Face& face);
+    //Vector3* GetVerticesForFace(const Face& face);
 
-    float* GetAllFaceVertexValues();
+    int* GetAllIndices() const;
 };
 
 #endif //FTM_MESH_H

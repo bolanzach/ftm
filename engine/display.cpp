@@ -33,6 +33,8 @@ unsigned int VBO;
 unsigned int EBO;
 unsigned int shaderProgram;
 
+Mesh mesh;
+
 bool initializeWindow() {
     // A good resource:
     // https://github.com/Gaetz/SDL-OpenGL
@@ -119,17 +121,12 @@ bool initializeWindow() {
 
     ///// VERTICES /////
     ////////////////////
-    // vertices should be in counter-clockwise order
-    float vertices[] = {
-            0.5f,  0.5f, 0.0f,  // top right
-            0.5f, -0.5f, 0.0f,  // bottom right
-            -0.5f, -0.5f, 0.0f,  // bottom left
-            -0.5f,  0.5f, 0.0f   // top left
-    };
-    unsigned int indices[] = {  // note that we start from 0!
-            0, 1, 3,  // first Triangle
-            1, 2, 3   // second Triangle
-    };
+    mesh = Mesh::LoadFileObj("../assets/free_car_001.obj");
+
+    // move the car down
+    for (auto &v : mesh.vertices) {
+        v.y -= 0.95f;
+    }
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -137,13 +134,16 @@ bool initializeWindow() {
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3) * mesh.vertices.size(), &mesh.vertices[0], GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * mesh.faces.size() * 3, mesh.GetAllIndices(), GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)nullptr);
     glEnableVertexAttribArray(0);
+
+    // uncomment this call to draw in wireframe polygons.
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     return true;
 }
@@ -155,7 +155,7 @@ void displayUpdate() {
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
 //    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, mesh.vertices.size(), GL_UNSIGNED_INT, nullptr);
 
     // unbind VAO
     glBindVertexArray(0);
